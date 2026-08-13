@@ -79,15 +79,12 @@ app.get("/api/latest", (req, res) => {
         .sort((a, b) => b.time - a.time);
 
     if (files.length === 0) {
-        return res.status(404).json({
-            message: "لا توجد صور"
-        });
+        return res.status(404).send("لا توجد صور");
     }
 
-    res.json({
-        success: true,
-        image: `/captured-images/${files[0].name}`
-    });
+    const latestImage = path.join(imagesFolder, files[0].name);
+
+    res.sendFile(latestImage);
 });
 
 app.listen(SERVER_PORT, "0.0.0.0", () => {

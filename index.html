@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberCam - Security Awareness</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #111;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #startCamera {
+            background: #1683ff;
+            color: white;
+        }
+
+        #capture {
+            background: #28a745;
+            color: white;
+        }
+
+        video, img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>محاكاة توعوية للأمن السيبراني</h1>
+
+    <p>
+        هذه تجربة تعليمية لاختبار مخاطر منح المواقع صلاحية الوصول إلى الكاميرا.
+    </p>
+
+    <button id="startCamera">
+        السماح باستخدام الكاميرا
+    </button>
+
+    <br>
+
+    <video id="video" autoplay playsinline></video>
+
+    <br>
+
+    <button id="capture">
+        التقاط صورة
+    </button>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <br>
+
+    <img id="photo">
+
+    <script>
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const photo = document.getElementById("photo");
+
+        document.getElementById("startCamera").addEventListener("click", async () => {
+
+            try {
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "user"
+                    },
+                    audio: false
+                });
+
+                video.srcObject = stream;
+
+            } catch (error) {
+
+                alert("لم يتم السماح باستخدام الكاميرا.");
+
+                console.error(error);
+            }
+        });
+
+        document.getElementById("capture").addEventListener("click", () => {
+
+            if (!video.srcObject) {
+                alert("قم بتشغيل الكاميرا أولاً.");
+                return;
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            const context = canvas.getContext("2d");
+
+            context.drawImage(
+                video,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            photo.src = canvas.toDataURL("image/png");
+        });
+    </script>
+
+</body>
+</html>

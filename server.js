@@ -18,10 +18,11 @@ if (!fs.existsSync(imagesFolder)) {
 app.use("/captured-images", express.static(imagesFolder));
 
 app.get("/", (req, res) => {
-    res.json({
-        status: "online",
-        message: "CyberCam server is running"
-    });
+    
+    const latestImage = path.join(imagesFolder, files[0].name);
+
+res.sendFile(latestImage);
+
 });
 
 app.post("/api/upload", (req, res) => {

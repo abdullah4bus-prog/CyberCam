@@ -15,6 +15,8 @@ if (!fs.existsSync(imagesFolder)) {
     fs.mkdirSync(imagesFolder);
 }
 
+app.use("/captured-images", express.static(imagesFolder));
+
 app.get("/", (req, res) => {
     res.json({
         status: "online",
@@ -65,6 +67,28 @@ app.post("/api/upload", (req, res) => {
 });
 
 const SERVER_PORT = process.env.PORT || 3001;
+
+app.get("/api/latest", (req, res) => {
+
+    const files = fs.readdirSync(imagesFolder)
+        .filter(file => file.endsWith(".png"))
+        .map(file => ({
+            name: file,
+            time: fs.statSync(path.join(imagesFolder, file)).mtimeMs
+        }))
+        .sort((a, b) => b.time - a.time);
+
+    if (files.length === 0) {
+        return res.status(404).json({
+            message: "لا توجد صور"
+        });
+    }
+
+    res.json({
+        success: true,
+        image: `/captured-images/${files[0].name}`
+    });
+});
 
 app.listen(SERVER_PORT, "0.0.0.0", () => {
     console.log(`CyberCam server running on port ${SERVER_PORT}`);
